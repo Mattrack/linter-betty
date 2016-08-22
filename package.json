@@ -1,7 +1,7 @@
 {
   "name": "linter-betty",
   "main": "./lib/main",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lint C code on the fly, using betty Holberton coding style checker.",
   "keywords": [],
   "repository": "https://github.com/Mattrack/linter-betty",
