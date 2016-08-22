@@ -1,74 +1,80 @@
 'use babel';
+/* eslint-env jasmine */
 
-import LinterBetty from '../lib/linter-betty';
+import * as path from 'path';
 
-// Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.
-//
-// To run a specific `it` or `describe` block add an `f` to the front (e.g. `fit`
-// or `fdescribe`). Remove the `f` to unfocus the block.
+const badPath = path.join(__dirname, 'files', 'bad.c');
+const goodPath = path.join(__dirname, 'files', 'good.c');
+const emptyPath = path.join(__dirname, 'files', 'empty.c');
 
-describe('LinterBetty', () => {
-  let workspaceElement;
-  let activationPromise;
+const lint = require('../lib/main.js').provideLinter().lint;
 
+describe('The Betty provider for Linter', () => {
   beforeEach(() => {
-    workspaceElement = atom.views.getView(atom.workspace);
-    activationPromise = atom.packages.activatePackage('linter-betty');
+    atom.workspace.destroyActivePaneItem();
+    waitsForPromise(() => {
+      atom.packages.activatePackage('linter-betty');
+      return atom.packages.activatePackage('linter-betty').then(() =>
+        atom.workspace.open(badPath)
+      );
+    });
   });
 
-  describe('when the linter-betty:toggle event is triggered', () => {
-    it('hides and shows the modal panel', () => {
-      // Before the activation event the view is not on the DOM, and no panel
-      // has been created
-      expect(workspaceElement.querySelector('.linter-betty')).not.toExist();
+  it('should be in the packages list', () =>
+    expect(atom.packages.isPackageLoaded('linter-betty')).toBe(true)
+  );
 
-      // This is an activation event, triggering it will cause the package to be
-      // activated.
-      atom.commands.dispatch(workspaceElement, 'linter-betty:toggle');
+  it('should be an active package', () =>
+    expect(atom.packages.isPackageActive('linter-betty')).toBe(true)
+  );
 
-      waitsForPromise(() => {
-        return activationPromise;
-      });
-
-      runs(() => {
-        expect(workspaceElement.querySelector('.linter-betty')).toExist();
-
-        let linterBettyElem = workspaceElement.querySelector('.linter-betty');
-        expect(linterBettyElem).toExist();
-
-        let linterBettyPanel = atom.workspace.panelForItem(linterBettyElem);
-        expect(linterBettyPanel.isVisible()).toBe(true);
-        atom.commands.dispatch(workspaceElement, 'linter-betty:toggle');
-        expect(linterBettyPanel.isVisible()).toBe(false);
+  describe('checks bad.c and', () => {
+    let editor = null;
+    beforeEach(() => {
+      atom.workspace.open(badPath).then(function(openEditor) {
+        editor = openEditor;
       });
     });
 
-    it('hides and shows the view', () => {
-      // This test shows you an integration test testing at the view level.
-
-      // Attaching the workspaceElement to the DOM is required to allow the
-      // `toBeVisible()` matchers to work. Anything testing visibility or focus
-      // requires that the workspaceElement is on the DOM. Tests that attach the
-      // workspaceElement to the DOM are generally slower than those off DOM.
-      jasmine.attachToDOM(workspaceElement);
-
-      expect(workspaceElement.querySelector('.linter-betty')).not.toExist();
-
-      // This is an activation event, triggering it causes the package to be
-      // activated.
-      atom.commands.dispatch(workspaceElement, 'linter-betty:toggle');
-
-      waitsForPromise(() => {
-        return activationPromise;
-      });
-
-      runs(() => {
-        // Now we can test for view visibility
-        let linterBettyElem = workspaceElement.querySelector('.linter-betty');
-        expect(linterBettyElem).toBeVisible();
-        atom.commands.dispatch(workspaceElement, 'linter-betty:toggle');
-        expect(linterBettyElem).not.toBeVisible();
+    it('finds at least one message', () => {
+      atom.workspace.open(badPath).then(function(openEditor) {
+        lint(editor).then(messages => {
+          expect(messages.length).toEqual(1);
+        });
       });
     });
+
+    it('verifies that message', () => {
+      atom.workspace.open(badPath).then(function(openEditor) {
+        lint(editor).then(messages => {
+          expect(messages[0].type).toBeDefined();
+          expect(messages[0].type).toEqual('ERROR');
+          expect(messages[0].text).toBeDefined();
+          expect(messages[0].text)
+            .toEqual('externs should be avoided in .c files');
+          expect(messages[0].filePath).toBeDefined();
+          expect(messages[0].filePath).toEqual(badPath);
+          expect(messages[0].range).toBeDefined();
+          //expect(messages[0].range.length).toEqual(2);
+          //expect(messages[0].range).toEqual([[1, 0], [1, 6]]);
+        });
+      });
+    });
+  });
+
+  it('finds nothing wrong with an empty file', () => {
+    atom.workspace.open(emptyPath).then(editor =>
+      lint(editor).then(messages => {
+        expect(messages.length).toEqual(0);
+      })
+    );
+  });
+
+  it('finds nothing wrong with a valid file', () => {
+    atom.workspace.open(goodPath).then(editor =>
+      lint(editor).then(messages => {
+        expect(messages.length).toEqual(0);
+      })
+    );
   });
 });
