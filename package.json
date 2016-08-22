@@ -1,0 +1,25 @@
+{
+	"name": "linter-betty",
+	"main": "./lib/main",
+	"version": "0.0.1",
+	"description": "Lint C code on the fly, using betty Holberton coding style checker.",
+	"keywords": [
+	],
+	"activationCommands": {
+		"atom-workspace": "linter-betty:toggle"
+	},
+	"repository": "https://github.com/Mattrack/linter-betty",
+	"license": "MIT",
+	"engines": {
+		"atom": ">=1.0.0 <2.0.0"
+	},
+	"dependencies": {
+	},
+	"providedServices": {
+		"linter": {
+			"versions": {
+				"1.0.0": "provideLinter"
+			}
+		}
+	}
+}

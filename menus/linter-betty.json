@@ -1,0 +1,26 @@
+{
+  "context-menu": {
+    "atom-text-editor": [
+      {
+        "label": "Toggle linter-betty",
+        "command": "linter-betty:toggle"
+      }
+    ]
+  },
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "linter-betty",
+          "submenu": [
+            {
+              "label": "Toggle",
+              "command": "linter-betty:toggle"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
