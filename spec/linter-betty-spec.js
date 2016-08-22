@@ -8,7 +8,8 @@ import LinterBetty from '../lib/linter-betty';
 // or `fdescribe`). Remove the `f` to unfocus the block.
 
 describe('LinterBetty', () => {
-  let workspaceElement, activationPromise;
+  let workspaceElement;
+  let activationPromise;
 
   beforeEach(() => {
     workspaceElement = atom.views.getView(atom.workspace);
@@ -32,10 +33,10 @@ describe('LinterBetty', () => {
       runs(() => {
         expect(workspaceElement.querySelector('.linter-betty')).toExist();
 
-        let linterBettyElement = workspaceElement.querySelector('.linter-betty');
-        expect(linterBettyElement).toExist();
+        let linterBettyElem = workspaceElement.querySelector('.linter-betty');
+        expect(linterBettyElem).toExist();
 
-        let linterBettyPanel = atom.workspace.panelForItem(linterBettyElement);
+        let linterBettyPanel = atom.workspace.panelForItem(linterBettyElem);
         expect(linterBettyPanel.isVisible()).toBe(true);
         atom.commands.dispatch(workspaceElement, 'linter-betty:toggle');
         expect(linterBettyPanel.isVisible()).toBe(false);
@@ -63,10 +64,10 @@ describe('LinterBetty', () => {
 
       runs(() => {
         // Now we can test for view visibility
-        let linterBettyElement = workspaceElement.querySelector('.linter-betty');
-        expect(linterBettyElement).toBeVisible();
+        let linterBettyElem = workspaceElement.querySelector('.linter-betty');
+        expect(linterBettyElem).toBeVisible();
         atom.commands.dispatch(workspaceElement, 'linter-betty:toggle');
-        expect(linterBettyElement).not.toBeVisible();
+        expect(linterBettyElem).not.toBeVisible();
       });
     });
   });
