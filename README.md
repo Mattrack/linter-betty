@@ -26,6 +26,6 @@ Atom's settings menu or by editing your `~/.atom/config.cson` file (choose Open 
 section like the following:
 ```cson
 'linter-betty':
-  # Betty path. Needs to be the full path to the checkpatch script
-  'executablePath': ~/Betty/checkpatch.pl
+  # Betty path. Needs to be the full path to the betty-style perl script
+  'executablePath': ~/Betty/betty-style.pl
 ```
